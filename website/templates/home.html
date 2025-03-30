@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%}
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="mb-0">Welcome to Meal Recommendation System</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>How it works</h4>
+            <p>
+              Our meal recommendation system helps you discover delicious meals
+              based on your preferences and dietary requirements.
+            </p>
+            <ol>
+              <li>
+                Set your meal preferences including diet type, allergies, and
+                favorite cuisines
+              </li>
+              <li>Get personalized meal recommendations</li>
+              <li>Explore new recipes and meal ideas</li>
+            </ol>
+            <div class="d-grid gap-2">
+              <a href="/preferences" class="btn btn-primary"
+                >Set Your Preferences</a
+              >
+            </div>
+          </div>
+          <div class="col-md-6">
+            <img
+              src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+              class="img-fluid rounded"
+              alt="Food image"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

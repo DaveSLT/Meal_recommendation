@@ -1,0 +1,64 @@
+{% extends "base.html" %} {% block title %}Meal Recommendations{% endblock %} {%
+block content %}
+<div class="row">
+  <div class="col-md-12 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="mb-0">Your Personalized Meal Recommendations</h3>
+      </div>
+      <div class="card-body">
+        <p>
+          Based on your preferences, here are some meals we think you'll enjoy!
+        </p>
+        <a href="/preferences" class="btn btn-outline-primary"
+          >Update Preferences</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if meals %}
+<div class="row">
+  {% for meal in meals %}
+  <div class="col-md-4 mb-4">
+    <div class="card h-100">
+      <img
+        src="{{ meal.image }}"
+        class="card-img-top"
+        alt="{{ meal.name }}"
+        style="height: 200px; object-fit: cover"
+      />
+      <div class="card-body">
+        <h5 class="card-title">{{ meal.name }}</h5>
+        <p class="card-text">{{ meal.description }}</p>
+        <p><strong>Cuisine:</strong> {{ meal.cuisine }}</p>
+        <p><strong>Diet Type:</strong> {{ meal.diet_type|capitalize }}</p>
+        <div class="mb-3">
+          <strong>Ingredients:</strong>
+          <ul class="list-unstyled">
+            {% for ingredient in meal.ingredients %}
+            <li>{{ ingredient|capitalize }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="#" class="btn btn-primary btn-sm">View Recipe</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="alert alert-warning">
+      <p>
+        No meal recommendations found based on your preferences. Try adjusting
+        your preferences to see more options.
+      </p>
+    </div>
+  </div>
+</div>
+{% endif %} {% endblock %}
