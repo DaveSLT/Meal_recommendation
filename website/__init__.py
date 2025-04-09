@@ -5,8 +5,8 @@ from os import path
 from .models import db, User
 
 def create_app():
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'dave wapo'
+    app = Flask(__name__, template_folder='templates')
+    app.config['SECRET_KEY'] = 'hatdog'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost/meal_recommendation'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
@@ -33,3 +33,5 @@ def create_app():
         db.create_all()
     
     return app
+
+

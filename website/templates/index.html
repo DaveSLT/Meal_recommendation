@@ -1,0 +1,289 @@
+{% extends "base.html" %} {% block title %}Welcome to Meal Prefs{% endblock %}
+{% block content %}
+<div class="landing-page">
+  <!-- Background Elements -->
+  <div class="bg-elements">
+    <div class="food-icon food-icon-1">🥗</div>
+    <div class="food-icon food-icon-2">🍲</div>
+    <div class="food-icon food-icon-3">🥑</div>
+    <div class="food-icon food-icon-4">🍎</div>
+    <div class="food-icon food-icon-5">🥩</div>
+  </div>
+
+  <div class="container fill-height">
+    <!-- Hero Section -->
+    <div
+      class="row align-items-center justify-content-center text-center hero-section"
+    >
+      <div class="col-12 col-md-10 col-lg-8">
+        <div class="hero-content">
+          <h1 class="display-4 fw-bold mb-2">
+            Welcome to <span class="gradient-text">Meal Prefs</span>
+          </h1>
+          <p class="fs-4 mt-4 mb-5 text-muted">
+            Discover personalized meal recommendations tailored to your
+            preferences and diet.
+          </p>
+          <a
+            href="{{ url_for('auth.login') }}"
+            class="btn btn-success btn-lg rounded-pill get-started-btn px-5 py-3"
+          >
+            <i class="bi bi-egg-fried me-2"></i>
+            Get Started
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row features-section my-5" justify="center">
+      <!-- Share Your Preferences Card -->
+      <div class="col-12 col-md-4 feature-col">
+        <div class="card feature-card h-100">
+          <div class="feature-icon-wrapper">
+            <i class="bi bi-apple fs-1 text-success"></i>
+          </div>
+          <div class="card-body text-center">
+            <h5 class="card-title">Share Your Preferences 🍽️</h5>
+            <p class="card-text">
+              Tell us about your dietary needs, allergies, and favorite
+              cuisines.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Analysis Card -->
+      <div class="col-12 col-md-4 feature-col">
+        <div class="card feature-card h-100">
+          <div class="feature-icon-wrapper">
+            <i class="bi bi-brain fs-1 text-success"></i>
+          </div>
+          <div class="card-body text-center">
+            <h5 class="card-title">Smart Analysis 🧠</h5>
+            <p class="card-text">
+              Our algorithm analyzes your preferences to find the perfect meal
+              matches.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enjoy Personalized Meals Card -->
+      <div class="col-12 col-md-4 feature-col">
+        <div class="card feature-card h-100">
+          <div class="feature-icon-wrapper">
+            <i class="bi bi-egg-fried fs-1 text-success"></i>
+          </div>
+          <div class="card-body text-center">
+            <h5 class="card-title">Enjoy Personalized Meals 🍲</h5>
+            <p class="card-text">
+              Get customized meal recommendations that match your unique taste.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="row about-section p-4 my-5">
+      <div class="col-12 col-md-10 col-lg-8 mx-auto">
+        <div class="card about-card border-0">
+          <div class="card-body">
+            <h2 class="card-title fs-2 fw-bold text-center mb-4">
+              About Our App
+            </h2>
+            <p class="card-text fs-5 mb-4">
+              Meal Recommender is designed to provide personalized meal
+              suggestions based on your dietary preferences, restrictions, and
+              nutritional goals. Whether you're looking for a quick snack or a
+              complete meal plan, our app helps you make healthier choices.
+            </p>
+            <p class="card-text fs-5">
+              Our intelligent recommendation system analyzes your preferences to
+              curate the best meal options suited just for you!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .landing-page {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle, #e0e0e0 50%, #ffffff 100%);
+    min-height: 100vh;
+  }
+
+  .bg-elements {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .food-icon {
+    position: absolute;
+    font-size: 5rem;
+    opacity: 0.15;
+    z-index: -1;
+    animation: float 10s ease-in-out infinite;
+  }
+
+  .food-icon-1 {
+    top: 10%;
+    left: 5%;
+    animation-delay: 0s;
+  }
+
+  .food-icon-2 {
+    top: 60%;
+    left: 15%;
+    animation-delay: 2s;
+  }
+
+  .food-icon-3 {
+    top: 30%;
+    right: 10%;
+    animation-delay: 4s;
+  }
+
+  .food-icon-4 {
+    top: 80%;
+    right: 20%;
+    animation-delay: 6s;
+  }
+
+  .food-icon-5 {
+    top: 50%;
+    left: 50%;
+    animation-delay: 8s;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-20px) rotate(5deg);
+    }
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+  }
+
+  .hero-section {
+    min-height: 80vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-content {
+    animation: fadeIn 1s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .gradient-text {
+    background: linear-gradient(90deg, #4caf50, #8bc34a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .get-started-btn {
+    text-transform: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: transform 0.3s ease;
+  }
+
+  .get-started-btn:hover {
+    transform: translateY(-3px);
+  }
+
+  .feature-col {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .feature-card,
+  .testimonial-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4caf50, #81c784);
+    color: white;
+  }
+
+  .feature-card:hover,
+  .testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .feature-icon-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .about-section {
+    background: linear-gradient(
+      135deg,
+      rgba(139, 195, 74, 0.1) 0%,
+      rgba(76, 175, 80, 0.1) 100%
+    );
+    border-radius: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .about-card {
+    background: transparent;
+  }
+
+  .testimonial-card {
+    border-radius: 12px;
+    background-color: white;
+    padding: 10px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 960px) {
+    .hero-section {
+      min-height: 60vh;
+    }
+
+    .food-icon {
+      font-size: 3rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero-section h1 {
+      font-size: 2rem !important;
+    }
+
+    .food-icon {
+      font-size: 2.5rem;
+    }
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,644 @@
+{% extends "base.html" %}
+
+{% block title %}Set Your Preferences{% endblock %}
+
+{% block content %}
+<div class="gather-data-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="preferences-card">
+          <div class="preferences-header">
+            <h1 class="preferences-title">Tell Us About Your Preferences</h1>
+            <p class="preferences-subtitle">Help us create personalized meal recommendations just for you</p>
+          </div>
+          
+          <div class="preferences-progress">
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="progress-steps">
+              <span class="progress-step active" data-step="1">Diet</span>
+              <span class="progress-step" data-step="2">Allergies</span>
+              <span class="progress-step" data-step="3">Cuisine</span>
+              <span class="progress-step" data-step="4">Preferences</span>
+            </div>
+          </div>
+          
+          <form method="POST" id="preferencesForm">
+            <div class="preferences-body">
+              <!-- Step 1: Diet Type -->
+              <div class="step-content active" data-step="1">
+                <h2 class="step-title">What type of diet do you follow?</h2>
+                <div class="diet-options">
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <div class="diet-option">
+                        <input type="radio" class="btn-check" name="diet_type" id="diet_omnivore" value="omnivore" {% if preferences and preferences.diet_type == 'omnivore' %}checked{% endif %} required>
+                        <label class="btn btn-outline-success w-100" for="diet_omnivore">
+                          <i class="bi bi-egg-fried mb-2"></i>
+                          <span>Omnivore</span>
+                          <small>I eat everything</small>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <div class="diet-option">
+                        <input type="radio" class="btn-check" name="diet_type" id="diet_vegetarian" value="vegetarian" {% if preferences and preferences.diet_type == 'vegetarian' %}checked{% endif %} required>
+                        <label class="btn btn-outline-success w-100" for="diet_vegetarian">
+                          <i class="bi bi-flower1 mb-2"></i>
+                          <span>Vegetarian</span>
+                          <small>No meat</small>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <div class="diet-option">
+                        <input type="radio" class="btn-check" name="diet_type" id="diet_vegan" value="vegan" {% if preferences and preferences.diet_type == 'vegan' %}checked{% endif %} required>
+                        <label class="btn btn-outline-success w-100" for="diet_vegan">
+                          <i class="bi bi-tree mb-2"></i>
+                          <span>Vegan</span>
+                          <small>No animal products</small>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <div class="diet-option">
+                        <input type="radio" class="btn-check" name="diet_type" id="diet_pescatarian" value="pescatarian" {% if preferences and preferences.diet_type == 'pescatarian' %}checked{% endif %} required>
+                        <label class="btn btn-outline-success w-100" for="diet_pescatarian">
+                          <i class="bi bi-water mb-2"></i>
+                          <span>Pescatarian</span>
+                          <small>Vegetarian + seafood</small>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <div class="diet-option">
+                        <input type="radio" class="btn-check" name="diet_type" id="diet_keto" value="keto" {% if preferences and preferences.diet_type == 'keto' %}checked{% endif %} required>
+                        <label class="btn btn-outline-success w-100" for="diet_keto">
+                          <i class="bi bi-droplet-half mb-2"></i>
+                          <span>Keto</span>
+                          <small>Low carb, high fat</small>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <div class="diet-option">
+                        <input type="radio" class="btn-check" name="diet_type" id="diet_paleo" value="paleo" {% if preferences and preferences.diet_type == 'paleo' %}checked{% endif %} required>
+                        <label class="btn btn-outline-success w-100" for="diet_paleo">
+                          <i class="bi bi-lightning mb-2"></i>
+                          <span>Paleo</span>
+                          <small>Whole foods, no processed</small>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 2: Allergies -->
+              <div class="step-content" data-step="2">
+                <h2 class="step-title">Do you have any allergies or intolerances?</h2>
+                <div class="form-group mb-4">
+                  <label for="allergies" class="form-label">List any food allergies or intolerances you have</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-exclamation-triangle"></i></span>
+                    <input type="text" class="form-control" id="allergies" name="allergies" placeholder="e.g., peanuts, shellfish, gluten (comma separated)" value="{{ preferences.allergies if preferences else '' }}">
+                  </div>
+                  <div class="form-text">Separate multiple allergies with commas</div>
+                </div>
+                
+                <div class="common-allergies">
+                  <h3 class="common-allergies-title">Common Allergies</h3>
+                  <div class="row">
+                    <div class="col-6 col-md-3 mb-2">
+                      <button type="button" class="btn btn-outline-secondary btn-sm allergy-tag" data-allergy="Peanuts">Peanuts</button>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                      <button type="button" class="btn btn-outline-secondary btn-sm allergy-tag" data-allergy="Tree nuts">Tree nuts</button>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                      <button type="button" class="btn btn-outline-secondary btn-sm allergy-tag" data-allergy="Milk">Milk</button>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                      <button type="button" class="btn btn-outline-secondary btn-sm allergy-tag" data-allergy="Eggs">Eggs</button>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                      <button type="button" class="btn btn-outline-secondary btn-sm allergy-tag" data-allergy="Wheat">Wheat</button>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                      <button type="button" class="btn btn-outline-secondary btn-sm allergy-tag" data-allergy="Soy">Soy</button>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                      <button type="button" class="btn btn-outline-secondary btn-sm allergy-tag" data-allergy="Fish">Fish</button>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                      <button type="button" class="btn btn-outline-secondary btn-sm allergy-tag" data-allergy="Shellfish">Shellfish</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 3: Cuisine -->
+              <div class="step-content" data-step="3">
+                <h2 class="step-title">What cuisines do you prefer?</h2>
+                <div class="form-group mb-4">
+                  <label for="favorite_cuisine" class="form-label">Select your favorite cuisine</label>
+                  <select class="form-select" id="favorite_cuisine" name="favorite_cuisine">
+                    <option value="" {% if not preferences or not preferences.favorite_cuisine %}selected{% endif %}>No preference</option>
+                    <option value="Italian" {% if preferences and preferences.favorite_cuisine == 'Italian' %}selected{% endif %}>Italian</option>
+                    <option value="Mexican" {% if preferences and preferences.favorite_cuisine == 'Mexican' %}selected{% endif %}>Mexican</option>
+                    <option value="Asian" {% if preferences and preferences.favorite_cuisine == 'Asian' %}selected{% endif %}>Asian</option>
+                    <option value="Indian" {% if preferences and preferences.favorite_cuisine == 'Indian' %}selected{% endif %}>Indian</option>
+                    <option value="American" {% if preferences and preferences.favorite_cuisine == 'American' %}selected{% endif %}>American</option>
+                    <option value="Mediterranean" {% if preferences and preferences.favorite_cuisine == 'Mediterranean' %}selected{% endif %}>Mediterranean</option>
+                    <option value="Middle Eastern" {% if preferences and preferences.favorite_cuisine == 'Middle Eastern' %}selected{% endif %}>Middle Eastern</option>
+                    <option value="Filipino" {% if preferences and preferences.favorite_cuisine == 'Filipino' %}selected{% endif %}>Filipino</option>
+                  </select>
+                </div>
+                
+                <div class="cuisine-cards">
+                  <div class="row">
+                    <div class="col-md-3 col-6 mb-3">
+                      <div class="cuisine-card" data-cuisine="Italian">
+                        <div class="cuisine-image" style="background-image: url('https://images.unsplash.com/photo-1498579150354-977475b7ea0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60')"></div>
+                        <div class="cuisine-name">Italian</div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                      <div class="cuisine-card" data-cuisine="Mexican">
+                        <div class="cuisine-image" style="background-image: url('https://images.unsplash.com/photo-1565299585323-38d6b0865b47?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60')"></div>
+                        <div class="cuisine-name">Mexican</div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                      <div class="cuisine-card" data-cuisine="Asian">
+                        <div class="cuisine-image" style="background-image: url('https://images.unsplash.com/photo-1541696490-8744a5dc0228?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60')"></div>
+                        <div class="cuisine-name">Asian</div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                      <div class="cuisine-card" data-cuisine="Indian">
+                        <div class="cuisine-image" style="background-image: url('https://images.unsplash.com/photo-1585937421612-70a008356c36?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60')"></div>
+                        <div class="cuisine-name">Indian</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 4: Additional Preferences -->
+              <div class="step-content" data-step="4">
+                <h2 class="step-title">Additional Preferences</h2>
+                
+                <div class="form-group mb-4">
+                  <label for="disliked_ingredients" class="form-label">Ingredients you don't like</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-x-circle"></i></span>
+                    <input type="text" class="form-control" id="disliked_ingredients" name="disliked_ingredients" placeholder="e.g., mushrooms, olives, cilantro (comma separated)" value="{{ preferences.disliked_ingredients if preferences else '' }}">
+                  </div>
+                  <div class="form-text">Separate multiple ingredients with commas</div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-6 mb-4">
+                    <label class="form-label">Calorie Preference</label>
+                    <div class="btn-group w-100" role="group">
+                      <input type="radio" class="btn-check" name="calorie_preference" id="calorie_low" value="low" {% if preferences and preferences.calorie_preference == 'low' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="calorie_low">Low</label>
+                      
+                      <input type="radio" class="btn-check" name="calorie_preference" id="calorie_medium" value="medium" {% if preferences and preferences.calorie_preference == 'medium' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="calorie_medium">Medium</label>
+                      
+                      <input type="radio" class="btn-check" name="calorie_preference" id="calorie_high" value="high" {% if preferences and preferences.calorie_preference == 'high' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="calorie_high">High</label>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6 mb-4">
+                    <label class="form-label">Meal Complexity</label>
+                    <div class="btn-group w-100" role="group">
+                      <input type="radio" class="btn-check" name="meal_complexity" id="complexity_simple" value="simple" {% if preferences and preferences.meal_complexity == 'simple' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="complexity_simple">Simple</label>
+                      
+                      <input type="radio" class="btn-check" name="meal_complexity" id="complexity_moderate" value="moderate" {% if preferences and preferences.meal_complexity == 'moderate' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="complexity_moderate">Moderate</label>
+                      
+                      <input type="radio" class="btn-check" name="meal_complexity" id="complexity_complex" value="complex" {% if preferences and preferences.meal_complexity == 'complex' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="complexity_complex">Complex</label>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6 mb-4">
+                    <label class="form-label">Cooking Time</label>
+                    <div class="btn-group w-100" role="group">
+                      <input type="radio" class="btn-check" name="cooking_time" id="time_quick" value="quick" {% if preferences and preferences.cooking_time == 'quick' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="time_quick">Quick</label>
+                      
+                      <input type="radio" class="btn-check" name="cooking_time" id="time_medium" value="medium" {% if preferences and preferences.cooking_time == 'medium' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="time_medium">Medium</label>
+                      
+                      <input type="radio" class="btn-check" name="cooking_time" id="time_long" value="long" {% if preferences and preferences.cooking_time == 'long' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="time_long">Long</label>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6 mb-4">
+                    <label class="form-label">Spice Level</label>
+                    <div class="btn-group w-100" role="group">
+                      <input type="radio" class="btn-check" name="spice_level" id="spice_mild" value="mild" {% if preferences and preferences.spice_level == 'mild' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="spice_mild">Mild</label>
+                      
+                      <input type="radio" class="btn-check" name="spice_level" id="spice_medium" value="medium" {% if preferences and preferences.spice_level == 'medium' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="spice_medium">Medium</label>
+                      
+                      <input type="radio" class="btn-check" name="spice_level" id="spice_hot" value="hot" {% if preferences and preferences.spice_level == 'hot' %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="spice_hot">Hot</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="preferences-footer">
+              <button type="button" class="btn btn-outline-secondary btn-prev" disabled>
+                <i class="bi bi-arrow-left me-2"></i>Previous
+              </button>
+              <button type="button" class="btn btn-primary btn-next">
+                Next<i class="bi bi-arrow-right ms-2"></i>
+              </button>
+              <button type="submit" class="btn btn-success btn-submit d-none">
+                <i class="bi bi-check-circle me-2"></i>Save Preferences
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .gather-data-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding: 40px 0;
+  }
+  
+  .preferences-card {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 40px;
+    margin-bottom: 40px;
+  }
+  
+  .preferences-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .preferences-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .preferences-subtitle {
+    color: #6c757d;
+    margin-bottom: 0;
+  }
+  
+  .preferences-progress {
+    margin-bottom: 40px;
+  }
+  
+  .progress {
+    height: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .progress-bar {
+    background-color: #28a745;
+  }
+  
+  .progress-steps {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .progress-step {
+    font-size: 0.875rem;
+    color: #6c757d;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .progress-step::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    border: 2px solid #ced4da;
+  }
+  
+  .progress-step.active {
+    color: #28a745;
+    font-weight: 600;
+  }
+  
+  .progress-step.active::before {
+    background-color: #28a745;
+    border-color: #28a745;
+  }
+  
+  .progress-step.completed::before {
+    background-color: #28a745;
+    border-color: #28a745;
+  }
+  
+  .step-content {
+    display: none;
+  }
+  
+  .step-content.active {
+    display: block;
+  }
+  
+  .step-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 25px;
+  }
+  
+  /* Diet Options */
+  .diet-option label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    height: 100%;
+    border-radius: 15px;
+    transition: all 0.2s ease;
+  }
+  
+  .diet-option label i {
+    font-size: 2rem;
+  }
+  
+  .diet-option label span {
+    font-weight: 600;
+    margin: 10px 0 5px;
+  }
+  
+  .diet-option label small {
+    color: #6c757d;
+  }
+  
+  .btn-check:checked + .btn-outline-success {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  /* Allergies */
+  .common-allergies {
+    margin-top: 30px;
+  }
+  
+  .common-allergies-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+  
+  .allergy-tag {
+    width: 100%;
+    margin-bottom: 5px;
+    border-radius: 50px;
+  }
+  
+  /* Cuisine Cards */
+  .cuisine-cards {
+    margin-top: 30px;
+  }
+  
+  .cuisine-card {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .cuisine-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cuisine-card.selected {
+    border: 3px solid #28a745;
+  }
+  
+  .cuisine-image {
+    height: 120px;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .cuisine-name {
+    padding: 10px;
+    text-align: center;
+    font-weight: 600;
+  }
+  
+  /* Footer */
+  .preferences-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+  }
+  
+  .btn-prev, .btn-next, .btn-submit {
+    padding: 10px 20px;
+    font-weight: 500;
+  }
+  
+  @media (max-width: 768px) {
+    .preferences-card {
+      padding: 30px;
+    }
+    
+    .preferences-title {
+      font-size: 1.75rem;
+    }
+    
+    .progress-step {
+      font-size: 0.75rem;
+    }
+    
+    .step-title {
+      font-size: 1.25rem;
+    }
+  }
+</style>
+
+{% block additional_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('preferencesForm');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressSteps = document.querySelectorAll('.progress-step');
+    const stepContents = document.querySelectorAll('.step-content');
+    const btnPrev = document.querySelector('.btn-prev');
+    const btnNext = document.querySelector('.btn-next');
+    const btnSubmit = document.querySelector('.btn-submit');
+    
+    let currentStep = 1;
+    const totalSteps = stepContents.length;
+    
+    // Initialize progress
+    updateProgress();
+    
+    // Next button click
+    btnNext.addEventListener('click', function() {
+      if (currentStep < totalSteps) {
+        // Validate current step
+        if (validateStep(currentStep)) {
+          currentStep++;
+          updateUI();
+        }
+      }
+    });
+    
+    // Previous button click
+    btnPrev.addEventListener('click', function() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateUI();
+      }
+    });
+    
+    // Progress step click
+    progressSteps.forEach(step => {
+      step.addEventListener('click', function() {
+        const stepNum = parseInt(this.getAttribute('data-step'));
+        if (stepNum < currentStep) {
+          currentStep = stepNum;
+          updateUI();
+        }
+      });
+    });
+    
+    // Allergy tags click
+    const allergyTags = document.querySelectorAll('.allergy-tag');
+    const allergiesInput = document.getElementById('allergies');
+    
+    allergyTags.forEach(tag => {
+      tag.addEventListener('click', function() {
+        const allergy = this.getAttribute('data-allergy');
+        const currentAllergies = allergiesInput.value.split(',').map(a => a.trim()).filter(a => a !== '');
+        
+        if (!currentAllergies.includes(allergy)) {
+          currentAllergies.push(allergy);
+          allergiesInput.value = currentAllergies.join(', ');
+          this.classList.add('active');
+        } else {
+          const index = currentAllergies.indexOf(allergy);
+          currentAllergies.splice(index, 1);
+          allergiesInput.value = currentAllergies.join(', ');
+          this.classList.remove('active');
+        }
+      });
+    });
+    
+    // Cuisine cards click
+    const cuisineCards = document.querySelectorAll('.cuisine-card');
+    const cuisineSelect = document.getElementById('favorite_cuisine');
+    
+    cuisineCards.forEach(card => {
+      card.addEventListener('click', function() {
+        const cuisine = this.getAttribute('data-cuisine');
+        cuisineSelect.value = cuisine;
+        
+        // Remove selected class from all cards
+        cuisineCards.forEach(c => c.classList.remove('selected'));
+        
+        // Add selected class to clicked card
+        this.classList.add('selected');
+      });
+      
+      // Set initial selected state
+      if (card.getAttribute('data-cuisine') === cuisineSelect.value) {
+        card.classList.add('selected');
+      }
+    });
+    
+    // Update UI based on current step
+    function updateUI() {
+      // Update active step content
+      stepContents.forEach(content => {
+        content.classList.remove('active');
+      });
+      document.querySelector(`.step-content[data-step="${currentStep}"]`).classList.add('active');
+      
+      // Update progress steps
+      progressSteps.forEach(step => {
+        const stepNum = parseInt(step.getAttribute('data-step'));
+        step.classList.remove('active', 'completed');
+        
+        if (stepNum === currentStep) {
+          step.classList.add('active');
+        } else if (stepNum < currentStep) {
+          step.classList.add('completed');
+        }
+      });
+      
+      // Update buttons
+      btnPrev.disabled = currentStep === 1;
+      
+      if (currentStep === totalSteps) {
+        btnNext.classList.add('d-none');
+        btnSubmit.classList.remove('d-none');
+      } else {
+        btnNext.classList.remove('d-none');
+        btnSubmit.classList.add('d-none');
+      }
+      
+      // Update progress bar
+      updateProgress();
+    }
+    
+    // Update progress bar
+    function updateProgress() {
+      const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+      progressBar.style.width = `${progress}%`;
+      progressBar.setAttribute('aria-valuenow', progress);
+    }
+    
+    // Validate current step
+    function validateStep(step) {
+      if (step === 1) {
+        // Validate diet type
+        const dietType = document.querySelector('input[name="diet_type"]:checked');
+        if (!dietType) {
+          alert('Please select a diet type');
+          return false;
+        }
+      }
+      
+      return true;
+    }
+  });
+</script>
+{% endblock %}
+{% endblock %}
+

@@ -1,0 +1,108 @@
+{% extends "base.html" %} {% block title %}My Favorites - Meal Prefs{% endblock
+%} {% block content %}
+<div class="favorites-bg">
+  <div class="container py-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="mb-0">
+              <i class="bi bi-heart-fill me-2 text-danger"></i>
+              My Favorite Meals
+            </h3>
+          </div>
+          <div class="card-body">
+            <p>
+              Here are all the meals you've saved as favorites. You can remove
+              them from your favorites by clicking the heart icon.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Favorites Section -->
+    {% if meals %}
+    <div class="row">
+      {% for meal in meals %}
+      <div class="col-12 col-md-4 mb-4 meal-card-col">
+        <div class="card meal-card rounded-lg h-100">
+          <div class="meal-image-container position-relative">
+            <div
+              class="favorite-btn"
+              onclick="toggleFavorite({{ meal.id }}, this)"
+            >
+              <i class="bi bi-heart-fill favorite-icon"></i>
+            </div>
+            <img
+              src="{{ meal.image }}"
+              class="card-img-top meal-image"
+              alt="{{ meal.name }}"
+            />
+            <div class="image-overlay"></div>
+            <span
+              class="badge category-chip"
+              style="background-color: {{ get_category_color(meal.diet_type) }}"
+            >
+              {{ meal.diet_type|capitalize }}
+            </span>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ meal.name }}</h5>
+            <p class="card-text meal-description">{{ meal.description }}</p>
+            <p><strong>Cuisine:</strong> {{ meal.cuisine }}</p>
+
+            <!-- Rating Stars -->
+            <div class="rating" data-meal-id="{{ meal.id }}">
+              {% for i in range(5) %}
+              <i
+                class="bi bi-star rating-star empty"
+                onclick="rateMeal({{ meal.id }}, {{ i+1 }})"
+              ></i>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="card-footer bg-white border-0 pb-4">
+            <a
+              href="{{ url_for('views.meal_detail', meal_id=meal.id) }}"
+              class="btn view-recipe-btn w-100"
+            >
+              <i class="bi bi-egg-fried me-2"></i>
+              View Recipe
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-info">
+          <p>
+            You haven't added any meals to your favorites yet. Browse our
+            recommendations and click the heart icon to add meals to your
+            favorites.
+          </p>
+          <a
+            href="{{ url_for('views.recommendations') }}"
+            class="btn btn-primary mt-3"
+          >
+            <i class="bi bi-search me-2"></i>
+            Browse Recommendations
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .favorites-bg {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    min-height: 100vh;
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,648 @@
+{% extends "base.html" %} {% block title %}Your Meal Recommendations{% endblock
+%} {% block content %}
+<div class="recommendation-page">
+  <!-- Header Banner -->
+  <div class="recommendation-banner">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h1 class="recommendation-title">
+            Your Personalized Meal Recommendations
+          </h1>
+          <p class="recommendation-subtitle">
+            Based on your preferences and dietary needs
+          </p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+          <a
+            href="{{ url_for('views.preferences') }}"
+            class="btn btn-light btn-update-prefs"
+          >
+            <i class="bi bi-sliders me-2"></i>Update Preferences
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <!-- Filters Section -->
+    <div class="filters-section mb-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <div class="input-group">
+                <span class="input-group-text"
+                  ><i class="bi bi-search"></i
+                ></span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="searchInput"
+                  placeholder="Search meals..."
+                />
+              </div>
+            </div>
+            <div class="col-md-4 mt-3 mt-md-0">
+              <div class="d-flex">
+                <select class="form-select me-2" id="sortSelect">
+                  <option value="relevance">Sort by: Relevance</option>
+                  <option value="rating">Sort by: Rating</option>
+                  <option value="time">Sort by: Cooking Time</option>
+                  <option value="calories">Sort by: Calories</option>
+                </select>
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#filtersCollapse"
+                >
+                  <i class="bi bi-funnel"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="collapse mt-3" id="filtersCollapse">
+            <div class="row">
+              <div class="col-md-3 mb-2">
+                <label class="form-label">Cuisine</label>
+                <select class="form-select" id="cuisineFilter">
+                  <option value="">All Cuisines</option>
+                  <option value="Italian">Italian</option>
+                  <option value="Mexican">Mexican</option>
+                  <option value="Asian">Asian</option>
+                  <option value="American">American</option>
+                  <option value="International">International</option>
+                </select>
+              </div>
+              <div class="col-md-3 mb-2">
+                <label class="form-label">Meal Type</label>
+                <select class="form-select" id="mealTypeFilter">
+                  <option value="">All Types</option>
+                  <option value="breakfast">Breakfast</option>
+                  <option value="lunch">Lunch</option>
+                  <option value="dinner">Dinner</option>
+                  <option value="snack">Snack</option>
+                  <option value="dessert">Dessert</option>
+                </select>
+              </div>
+              <div class="col-md-3 mb-2">
+                <label class="form-label">Cooking Time</label>
+                <select class="form-select" id="timeFilter">
+                  <option value="">Any Time</option>
+                  <option value="15">Under 15 min</option>
+                  <option value="30">Under 30 min</option>
+                  <option value="60">Under 60 min</option>
+                </select>
+              </div>
+              <div class="col-md-3 mb-2">
+                <label class="form-label">Calories</label>
+                <select class="form-select" id="caloriesFilter">
+                  <option value="">Any Calories</option>
+                  <option value="300">Under 300</option>
+                  <option value="500">Under 500</option>
+                  <option value="800">Under 800</option>
+                </select>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+              <button class="btn btn-outline-secondary me-2" id="resetFilters">
+                Reset Filters
+              </button>
+              <button class="btn btn-success" id="applyFilters">
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations Grid -->
+    <div class="row" id="mealsGrid">
+      {% for meal in meals %}
+      <div
+        class="col-lg-4 col-md-6 mb-4 meal-item"
+        data-cuisine="{{ meal.cuisine }}"
+        data-type="{{ meal.diet_type }}"
+        data-time="{{ meal.prep_time + meal.cook_time }}"
+        data-calories="{{ meal.calories }}"
+      >
+        <div class="meal-card">
+          <div class="meal-image-container">
+            <img
+              src="{{ meal.image }}"
+              alt="{{ meal.name }}"
+              class="meal-image"
+            />
+            <div class="meal-overlay"></div>
+            <div
+              class="meal-category"
+              style="background-color: {{ get_category_color(meal.diet_type) }}"
+            >
+              {{ meal.diet_type|capitalize }}
+            </div>
+            <button
+              class="btn-favorite"
+              onclick="toggleFavorite({{ meal.id }}, this)"
+            >
+              <i class="bi bi-heart"></i>
+            </button>
+            {% if meal.complexity %}
+            <div class="meal-complexity">
+              <span
+                class="complexity-badge {% if meal.complexity == 'simple' %}simple{% elif meal.complexity == 'moderate' %}moderate{% else %}complex{% endif %}"
+              >
+                {{ meal.complexity|capitalize }}
+              </span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="meal-content">
+            <h3 class="meal-title">{{ meal.name }}</h3>
+            <div class="meal-meta">
+              <span class="meal-cuisine"
+                ><i class="bi bi-globe2"></i> {{ meal.cuisine }}</span
+              >
+              <span class="meal-time"
+                ><i class="bi bi-clock"></i> {{ meal.prep_time + meal.cook_time
+                }} min</span
+              >
+            </div>
+            <p class="meal-description">{{ meal.description }}</p>
+            <div class="meal-nutrition">
+              <div class="nutrition-item">
+                <span class="nutrition-value">{{ meal.calories }}</span>
+                <span class="nutrition-label">Cal</span>
+              </div>
+              <div class="nutrition-item">
+                <span class="nutrition-value">{{ meal.protein }}g</span>
+                <span class="nutrition-label">Protein</span>
+              </div>
+              <div class="nutrition-item">
+                <span class="nutrition-value">{{ meal.carbs }}g</span>
+                <span class="nutrition-label">Carbs</span>
+              </div>
+              <div class="nutrition-item">
+                <span class="nutrition-value">{{ meal.fat }}g</span>
+                <span class="nutrition-label">Fat</span>
+              </div>
+            </div>
+            <div class="meal-footer">
+              <div class="meal-rating" data-meal-id="{{ meal.id }}">
+                {% for i in range(5) %}
+                <i
+                  class="bi bi-star rating-star empty"
+                  onclick="rateMeal({{ meal.id }}, {{ i+1 }})"
+                ></i>
+                {% endfor %}
+              </div>
+              <a
+                href="{{ url_for('views.meal_detail', meal_id=meal.id) }}"
+                class="btn btn-view-recipe"
+                >View Recipe</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- No Results Message -->
+    <div class="no-results d-none" id="noResults">
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <i class="bi bi-search display-1 text-muted"></i>
+          <h3 class="mt-4">No meals match your search</h3>
+          <p class="text-muted">Try adjusting your filters or search terms</p>
+          <button class="btn btn-outline-success" id="resetSearchBtn">
+            Reset Search
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container mt-4">
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true"
+              >Previous</a
+            >
+          </li>
+          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Recommendation Page Styles */
+  .recommendation-page {
+    background-color: #f8f9fa;
+  }
+
+  /* Banner */
+  .recommendation-banner {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 40px 0;
+    margin-bottom: 20px;
+  }
+
+  .recommendation-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .recommendation-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+  }
+
+  .btn-update-prefs {
+    padding: 10px 20px;
+    font-weight: 500;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Meal Cards */
+  .meal-card {
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+
+  .meal-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .meal-image-container {
+    position: relative;
+    height: 200px;
+  }
+
+  .meal-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .meal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+  }
+
+  .meal-category {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 5px 10px;
+    border-radius: 50px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .meal-complexity {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+  }
+
+  .complexity-badge {
+    padding: 3px 8px;
+    border-radius: 50px;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .complexity-badge.simple {
+    background-color: #28a745;
+  }
+
+  .complexity-badge.moderate {
+    background-color: #ffc107;
+  }
+
+  .complexity-badge.complex {
+    background-color: #dc3545;
+  }
+
+  .btn-favorite {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  .btn-favorite:hover {
+    transform: scale(1.1);
+  }
+
+  .btn-favorite i {
+    color: #dc3545;
+    font-size: 1.1rem;
+  }
+
+  .meal-content {
+    padding: 20px;
+  }
+
+  .meal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  .meal-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+
+  .meal-meta i {
+    margin-right: 5px;
+  }
+
+  .meal-description {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .meal-nutrition {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+  }
+
+  .nutrition-item {
+    text-align: center;
+  }
+
+  .nutrition-value {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .nutrition-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #6c757d;
+  }
+
+  .meal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .meal-rating {
+    display: flex;
+  }
+
+  .rating-star {
+    color: #ffc107;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-right: 2px;
+  }
+
+  .rating-star.empty {
+    color: #e0e0e0;
+  }
+
+  .btn-view-recipe {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 50px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-view-recipe:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+  }
+
+  /* No Results */
+  .no-results {
+    margin-top: 40px;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 992px) {
+    .recommendation-title {
+      font-size: 2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .recommendation-banner {
+      padding: 30px 0;
+      text-align: center;
+    }
+
+    .recommendation-title {
+      font-size: 1.75rem;
+    }
+
+    .meal-nutrition {
+      padding: 8px 5px;
+    }
+
+    .nutrition-value {
+      font-size: 0.875rem;
+    }
+
+    .nutrition-label {
+      font-size: 0.7rem;
+    }
+  }
+</style>
+
+{% block additional_scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const sortSelect = document.getElementById("sortSelect");
+    const cuisineFilter = document.getElementById("cuisineFilter");
+    const mealTypeFilter = document.getElementById("mealTypeFilter");
+    const timeFilter = document.getElementById("timeFilter");
+    const caloriesFilter = document.getElementById("caloriesFilter");
+    const resetFiltersBtn = document.getElementById("resetFilters");
+    const applyFiltersBtn = document.getElementById("applyFilters");
+    const resetSearchBtn = document.getElementById("resetSearchBtn");
+    const mealsGrid = document.getElementById("mealsGrid");
+    const noResults = document.getElementById("noResults");
+    const mealItems = document.querySelectorAll(".meal-item");
+
+    // Apply filters function
+    function applyFilters() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const cuisine = cuisineFilter.value;
+      const mealType = mealTypeFilter.value;
+      const time = timeFilter.value ? parseInt(timeFilter.value) : null;
+      const calories = caloriesFilter.value
+        ? parseInt(caloriesFilter.value)
+        : null;
+
+      let visibleCount = 0;
+
+      mealItems.forEach((item) => {
+        const mealName = item
+          .querySelector(".meal-title")
+          .textContent.toLowerCase();
+        const mealDescription = item
+          .querySelector(".meal-description")
+          .textContent.toLowerCase();
+        const mealCuisine = item.dataset.cuisine;
+        const mealType = item.dataset.type;
+        const mealTime = parseInt(item.dataset.time);
+        const mealCalories = parseInt(item.dataset.calories);
+
+        const matchesSearch =
+          searchTerm === "" ||
+          mealName.includes(searchTerm) ||
+          mealDescription.includes(searchTerm);
+
+        const matchesCuisine = cuisine === "" || mealCuisine === cuisine;
+        const matchesMealType = mealType === "" || mealType === mealType;
+        const matchesTime = time === null || mealTime <= time;
+        const matchesCalories = calories === null || mealCalories <= calories;
+
+        if (
+          matchesSearch &&
+          matchesCuisine &&
+          matchesMealType &&
+          matchesTime &&
+          matchesCalories
+        ) {
+          item.classList.remove("d-none");
+          visibleCount++;
+        } else {
+          item.classList.add("d-none");
+        }
+      });
+
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        noResults.classList.remove("d-none");
+        mealsGrid.classList.add("d-none");
+      } else {
+        noResults.classList.add("d-none");
+        mealsGrid.classList.remove("d-none");
+      }
+    }
+
+    // Sort function
+    function sortMeals() {
+      const sortBy = sortSelect.value;
+      const mealItemsArray = Array.from(mealItems);
+
+      mealItemsArray.sort((a, b) => {
+        if (sortBy === "rating") {
+          // Sort by rating (placeholder - would need actual rating data)
+          return 0;
+        } else if (sortBy === "time") {
+          return parseInt(a.dataset.time) - parseInt(b.dataset.time);
+        } else if (sortBy === "calories") {
+          return parseInt(a.dataset.calories) - parseInt(b.dataset.calories);
+        }
+        return 0;
+      });
+
+      // Reorder in the DOM
+      mealItemsArray.forEach((item) => {
+        mealsGrid.appendChild(item);
+      });
+    }
+
+    // Reset filters
+    function resetFilters() {
+      searchInput.value = "";
+      cuisineFilter.value = "";
+      mealTypeFilter.value = "";
+      timeFilter.value = "";
+      caloriesFilter.value = "";
+
+      mealItems.forEach((item) => {
+        item.classList.remove("d-none");
+      });
+
+      noResults.classList.add("d-none");
+      mealsGrid.classList.remove("d-none");
+    }
+
+    // Event listeners
+    searchInput.addEventListener("keyup", function (e) {
+      if (e.key === "Enter") {
+        applyFilters();
+      }
+    });
+
+    sortSelect.addEventListener("change", sortMeals);
+
+    applyFiltersBtn.addEventListener("click", applyFilters);
+
+    resetFiltersBtn.addEventListener("click", resetFilters);
+
+    resetSearchBtn.addEventListener("click", resetFilters);
+  });
+</script>
+{% endblock %} {% endblock %}

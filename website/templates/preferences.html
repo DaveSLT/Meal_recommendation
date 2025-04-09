@@ -3,55 +3,141 @@
 {% block title %}My Preferences{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="mb-0">Set Your Meal Preferences</h3>
-            </div>
-            <div class="card-body">
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="diet_type" class="form-label">Diet Type</label>
-                        <select class="form-select" id="diet_type" name="diet_type" required>
-                            <option value="" disabled {% if not preferences %}selected{% endif %}>Select your diet type</option>
-                            <option value="omnivore" {% if preferences and preferences.diet_type == 'omnivore' %}selected{% endif %}>Omnivore (Eat everything)</option>
-                            <option value="vegetarian" {% if preferences and preferences.diet_type == 'vegetarian' %}selected{% endif %}>Vegetarian (No meat)</option>
-                            <option value="vegan" {% if preferences and preferences.diet_type == 'vegan' %}selected{% endif %}>Vegan (No animal products)</option>
-                            <option value="pescatarian" {% if preferences and preferences.diet_type == 'pescatarian' %}selected{% endif %}>Pescatarian (Vegetarian + seafood)</option>
-                            <option value="keto" {% if preferences and preferences.diet_type == 'keto' %}selected{% endif %}>Keto (Low carb, high fat)</option>
-                            <option value="paleo" {% if preferences and preferences.diet_type == 'paleo' %}selected{% endif %}>Paleo (Whole foods, no processed)</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="allergies" class="form-label">Allergies/Intolerances</label>
-                        <input type="text" class="form-control" id="allergies" name="allergies" placeholder="e.g., peanuts, shellfish, gluten (comma separated)" value="{{ preferences.allergies if preferences else '' }}">
-                        <div class="form-text">List any food allergies or intolerances you have (comma separated)</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="favorite_cuisine" class="form-label">Favorite Cuisine</label>
-                        <select class="form-select" id="favorite_cuisine" name="favorite_cuisine">
-                            <option value="" {% if not preferences or not preferences.favorite_cuisine %}selected{% endif %}>No preference</option>
-                            <option value="Italian" {% if preferences and preferences.favorite_cuisine == 'Italian' %}selected{% endif %}>Italian</option>
-                            <option value="Mexican" {% if preferences and preferences.favorite_cuisine == 'Mexican' %}selected{% endif %}>Mexican</option>
-                            <option value="Asian" {% if preferences and preferences.favorite_cuisine == 'Asian' %}selected{% endif %}>Asian</option>
-                            <option value="Indian" {% if preferences and preferences.favorite_cuisine == 'Indian' %}selected{% endif %}>Indian</option>
-                            <option value="American" {% if preferences and preferences.favorite_cuisine == 'American' %}selected{% endif %}>American</option>
-                            <option value="Mediterranean" {% if preferences and preferences.favorite_cuisine == 'Mediterranean' %}selected{% endif %}>Mediterranean</option>
-                            <option value="Middle Eastern" {% if preferences and preferences.favorite_cuisine == 'Middle Eastern' %}selected{% endif %}>Middle Eastern</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="disliked_ingredients" class="form-label">Disliked Ingredients</label>
-                        <input type="text" class="form-control" id="disliked_ingredients" name="disliked_ingredients" placeholder="e.g., mushrooms, olives, cilantro (comma separated)" value="{{ preferences.disliked_ingredients if preferences else '' }}">
-                        <div class="form-text">List any ingredients you don't like (comma separated)</div>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Save Preferences</button>
-                    </div>
-                </form>
-            </div>
+<div class="gather-data-bg">
+  <div class="food-pattern"></div>
+  
+  <div class="container py-6">
+    <div class="card form-card mx-auto rounded-lg mt-5">
+      <div class="card-header">
+        <div class="header-content">
+          <i class="bi bi-egg-fried text-white fs-3 me-3"></i>
+          <h2 class="fs-4 fw-bold text-white mb-0">Tell Us About Your Preferences</h2>
         </div>
+      </div>
+
+      <div class="card-body pt-4">
+        <p class="text-center mb-4">Help us create personalized meal recommendations just for you</p>
+        
+        <form method="POST">
+          <div class="mb-3">
+            <label for="diet_type" class="form-label">Diet Type</label>
+            <select class="form-select" id="diet_type" name="diet_type" required>
+              <option value="" disabled {% if not preferences %}selected{% endif %}>Select your diet type</option>
+              <option value="omnivore" {% if preferences and preferences.diet_type == 'omnivore' %}selected{% endif %}>Omnivore (Eat everything)</option>
+              <option value="vegetarian" {% if preferences and preferences.diet_type == 'vegetarian' %}selected{% endif %}>Vegetarian (No meat)</option>
+              <option value="vegan" {% if preferences and preferences.diet_type == 'vegan' %}selected{% endif %}>Vegan (No animal products)</option>
+              <option value="pescatarian" {% if preferences and preferences.diet_type == 'pescatarian' %}selected{% endif %}>Pescatarian (Vegetarian + seafood)</option>
+              <option value="keto" {% if preferences and preferences.diet_type == 'keto' %}selected{% endif %}>Keto (Low carb, high fat)</option>
+              <option value="paleo" {% if preferences and preferences.diet_type == 'paleo' %}selected{% endif %}>Paleo (Whole foods, no processed)</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="allergies" class="form-label">Allergies/Intolerances</label>
+            <input type="text" class="form-control" id="allergies" name="allergies" placeholder="e.g., peanuts, shellfish, gluten (comma separated)" value="{{ preferences.allergies if preferences else '' }}">
+            <div class="form-text">List any food allergies or intolerances you have (comma separated)</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="favorite_cuisine" class="form-label">Favorite Cuisine</label>
+            <select class="form-select" id="favorite_cuisine" name="favorite_cuisine">
+              <option value="" {% if not preferences or not preferences.favorite_cuisine %}selected{% endif %}>No preference</option>
+              <option value="Italian" {% if preferences and preferences.favorite_cuisine == 'Italian' %}selected{% endif %}>Italian</option>
+              <option value="Mexican" {% if preferences and preferences.favorite_cuisine == 'Mexican' %}selected{% endif %}>Mexican</option>
+              <option value="Asian" {% if preferences and preferences.favorite_cuisine == 'Asian' %}selected{% endif %}>Asian</option>
+              <option value="Indian" {% if preferences and preferences.favorite_cuisine == 'Indian' %}selected{% endif %}>Indian</option>
+              <option value="American" {% if preferences and preferences.favorite_cuisine == 'American' %}selected{% endif %}>American</option>
+              <option value="Mediterranean" {% if preferences and preferences.favorite_cuisine == 'Mediterranean' %}selected{% endif %}>Mediterranean</option>
+              <option value="Middle Eastern" {% if preferences and preferences.favorite_cuisine == 'Middle Eastern' %}selected{% endif %}>Middle Eastern</option>
+              <option value="Filipino" {% if preferences and preferences.favorite_cuisine == 'Filipino' %}selected{% endif %}>Filipino</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="disliked_ingredients" class="form-label">Disliked Ingredients</label>
+            <input type="text" class="form-control" id="disliked_ingredients" name="disliked_ingredients" placeholder="e.g., mushrooms, olives, cilantro (comma separated)" value="{{ preferences.disliked_ingredients if preferences else '' }}">
+            <div class="form-text">List any ingredients you don't like (comma separated)</div>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-success submit-btn">
+              <i class="bi bi-check-circle me-2"></i>
+              Save Preferences
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
+
+<style>
+.gather-data-bg {
+  background-color: #f0f8ff;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.food-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 25% 15%, rgba(255, 99, 71, 0.1) 2%, transparent 10%),
+    radial-gradient(circle at 75% 35%, rgba(50, 205, 50, 0.1) 2%, transparent 10%),
+    radial-gradient(circle at 15% 55%, rgba(70, 130, 180, 0.1) 2%, transparent 10%),
+    radial-gradient(circle at 85% 75%, rgba(255, 165, 0, 0.1) 2%, transparent 10%),
+    radial-gradient(circle at 45% 90%, rgba(138, 43, 226, 0.1) 2%, transparent 10%);
+  background-size: 600px 600px;
+  opacity: 0.8;
+  z-index: 0;
+}
+
+.form-card {
+  max-width: 600px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: none;
+  position: relative;
+  z-index: 1;
+}
+
+.card-header {
+  background: linear-gradient(90deg, #e1ae09, #a8d07b);
+  padding: 20px;
+  position: relative;
+  border-bottom: none;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+.submit-btn {
+  text-transform: none;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A) !important;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .form-card {
+    margin: 0 16px;
+  }
+
+  .card-header {
+    padding: 16px;
+  }
+}
+</style>
 {% endblock %}
+

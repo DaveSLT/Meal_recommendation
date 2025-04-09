@@ -1,0 +1,647 @@
+{% extends "base.html" %} {% block title %}My Profile{% endblock %} {% block
+content %}
+<div class="profile-page">
+  <div class="container py-5">
+    <div class="row">
+      <!-- Profile Card -->
+      <div class="col-lg-4 mb-4">
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar">
+              <img
+                src="{{ user.profile_picture or 'https://via.placeholder.com/150' }}"
+                alt="{{ user.username }}"
+              />
+              <button
+                class="btn btn-sm btn-light btn-change-avatar"
+                data-bs-toggle="modal"
+                data-bs-target="#avatarModal"
+              >
+                <i class="bi bi-camera"></i>
+              </button>
+            </div>
+            <h1 class="profile-name">{{ user.username }}</h1>
+            <p class="profile-email">{{ user.email }}</p>
+            <div class="profile-stats">
+              <div class="stat-item">
+                <span class="stat-value">0</span>
+                <span class="stat-label">Favorites</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">0</span>
+                <span class="stat-label">Ratings</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">0</span>
+                <span class="stat-label">Comments</span>
+              </div>
+            </div>
+          </div>
+          <div class="profile-actions">
+            <button
+              class="btn btn-outline-success btn-block mb-2"
+              data-bs-toggle="modal"
+              data-bs-target="#editProfileModal"
+            >
+              <i class="bi bi-pencil me-2"></i>Edit Profile
+            </button>
+            <button class="btn btn-outline-secondary btn-block">
+              <i class="bi bi-shield-lock me-2"></i>Change Password
+            </button>
+          </div>
+        </div>
+
+        <div class="account-info-card mt-4">
+          <h3 class="card-title">Account Information</h3>
+          <div class="info-item">
+            <span class="info-label">Member Since</span>
+            <span class="info-value"
+              >{{ user.date_created.strftime('%B %d, %Y') }}</span
+            >
+          </div>
+          <div class="info-item">
+            <span class="info-label">Last Login</span>
+            <span class="info-value">Today</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Account Type</span>
+            <span class="info-value">Standard</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Section -->
+      <div class="col-lg-8">
+        <div class="profile-tabs-card">
+          <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link active"
+                id="preferences-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#preferences"
+                type="button"
+                role="tab"
+                aria-controls="preferences"
+                aria-selected="true"
+              >
+                <i class="bi bi-sliders me-2"></i>Preferences
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="favorites-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#favorites"
+                type="button"
+                role="tab"
+                aria-controls="favorites"
+                aria-selected="false"
+              >
+                <i class="bi bi-heart me-2"></i>Favorites
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="activity-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#activity"
+                type="button"
+                role="tab"
+                aria-controls="activity"
+                aria-selected="false"
+              >
+                <i class="bi bi-clock-history me-2"></i>Activity
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content p-4" id="profileTabsContent">
+            <!-- Preferences Tab -->
+            <div
+              class="tab-pane fade show active"
+              id="preferences"
+              role="tabpanel"
+              aria-labelledby="preferences-tab"
+            >
+              <div
+                class="d-flex justify-content-between align-items-center mb-4"
+              >
+                <h3 class="tab-title">Your Preferences</h3>
+                <a
+                  href="{{ url_for('views.preferences') }}"
+                  class="btn btn-sm btn-success"
+                >
+                  <i class="bi bi-pencil me-2"></i>Edit Preferences
+                </a>
+              </div>
+
+              {% if preferences %}
+              <div class="preferences-summary">
+                <div class="row">
+                  <div class="col-md-6 mb-4">
+                    <div class="preference-card">
+                      <div class="preference-icon">
+                        <i class="bi bi-egg-fried"></i>
+                      </div>
+                      <div class="preference-content">
+                        <h4 class="preference-title">Diet Type</h4>
+                        <p class="preference-value">
+                          {{ preferences.diet_type|capitalize }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-4">
+                    <div class="preference-card">
+                      <div class="preference-icon">
+                        <i class="bi bi-globe2"></i>
+                      </div>
+                      <div class="preference-content">
+                        <h4 class="preference-title">Favorite Cuisine</h4>
+                        <p class="preference-value">
+                          {{ preferences.favorite_cuisine or 'Not specified' }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-4">
+                    <div class="preference-card">
+                      <div class="preference-icon">
+                        <i class="bi bi-exclamation-triangle"></i>
+                      </div>
+                      <div class="preference-content">
+                        <h4 class="preference-title">Allergies</h4>
+                        <p class="preference-value">
+                          {{ preferences.allergies or 'None' }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-4">
+                    <div class="preference-card">
+                      <div class="preference-icon">
+                        <i class="bi bi-x-circle"></i>
+                      </div>
+                      <div class="preference-content">
+                        <h4 class="preference-title">Disliked Ingredients</h4>
+                        <p class="preference-value">
+                          {{ preferences.disliked_ingredients or 'None' }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-4">
+                    <div class="preference-card">
+                      <div class="preference-icon">
+                        <i class="bi bi-fire"></i>
+                      </div>
+                      <div class="preference-content">
+                        <h4 class="preference-title">Calorie Preference</h4>
+                        <p class="preference-value">
+                          {{ preferences.calorie_preference|capitalize if
+                          preferences.calorie_preference else 'Not specified' }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-4">
+                    <div class="preference-card">
+                      <div class="preference-icon">
+                        <i class="bi bi-clock"></i>
+                      </div>
+                      <div class="preference-content">
+                        <h4 class="preference-title">Cooking Time</h4>
+                        <p class="preference-value">
+                          {{ preferences.cooking_time|capitalize if
+                          preferences.cooking_time else 'Not specified' }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% else %}
+              <div class="alert alert-info">
+                <p>
+                  You haven't set your preferences yet. Setting your preferences
+                  helps us provide personalized meal recommendations.
+                </p>
+                <a
+                  href="{{ url_for('views.preferences') }}"
+                  class="btn btn-primary mt-2"
+                  >Set Preferences</a
+                >
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Favorites Tab -->
+            <div
+              class="tab-pane fade"
+              id="favorites"
+              role="tabpanel"
+              aria-labelledby="favorites-tab"
+            >
+              <div
+                class="d-flex justify-content-between align-items-center mb-4"
+              >
+                <h3 class="tab-title">Your Favorite Meals</h3>
+                <a
+                  href="{{ url_for('views.favorites') }}"
+                  class="btn btn-sm btn-outline-success"
+                >
+                  View All Favorites
+                </a>
+              </div>
+
+              <div class="favorites-empty text-center py-5">
+                <i class="bi bi-heart display-1 text-muted"></i>
+                <h4 class="mt-4">No favorites yet</h4>
+                <p class="text-muted">
+                  You haven't added any meals to your favorites
+                </p>
+                <a
+                  href="{{ url_for('views.recommendations') }}"
+                  class="btn btn-success mt-2"
+                >
+                  <i class="bi bi-search me-2"></i>Browse Recommendations
+                </a>
+              </div>
+            </div>
+
+            <!-- Activity Tab -->
+            <div
+              class="tab-pane fade"
+              id="activity"
+              role="tabpanel"
+              aria-labelledby="activity-tab"
+            >
+              <h3 class="tab-title mb-4">Recent Activity</h3>
+
+              <div class="activity-timeline">
+                <div class="activity-empty text-center py-5">
+                  <i class="bi bi-clock-history display-1 text-muted"></i>
+                  <h4 class="mt-4">No recent activity</h4>
+                  <p class="text-muted">Your activity will appear here</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div
+    class="modal fade"
+    id="editProfileModal"
+    tabindex="-1"
+    aria-labelledby="editProfileModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form id="editProfileForm">
+            <div class="mb-3">
+              <label for="editUsername" class="form-label">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="editUsername"
+                value="{{ user.username }}"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="editEmail" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="editEmail"
+                value="{{ user.email }}"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="editBio" class="form-label">Bio</label>
+              <textarea class="form-control" id="editBio" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="button" class="btn btn-success">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Avatar Modal -->
+  <div
+    class="modal fade"
+    id="avatarModal"
+    tabindex="-1"
+    aria-labelledby="avatarModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="avatarModalLabel">
+            Change Profile Picture
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center mb-4">
+            <img
+              src="{{ user.profile_picture or 'https://via.placeholder.com/150' }}"
+              alt="{{ user.username }}"
+              class="avatar-preview"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="avatarUpload" class="form-label"
+              >Upload new image</label
+            >
+            <input
+              class="form-control"
+              type="file"
+              id="avatarUpload"
+              accept="image/*"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="button" class="btn btn-success">Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Profile Page Styles */
+  .profile-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+  }
+
+  /* Profile Card */
+  .profile-card {
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+  }
+
+  .profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .profile-avatar {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .btn-change-avatar {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .profile-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #333;
+  }
+
+  .profile-email {
+    color: #6c757d;
+    margin-bottom: 20px;
+  }
+
+  .profile-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #28a745;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+
+  .profile-actions .btn {
+    width: 100%;
+    padding: 10px;
+    font-weight: 500;
+  }
+
+  /* Account Info Card */
+  .account-info-card {
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+
+  .info-label {
+    color: #6c757d;
+  }
+
+  .info-value {
+    font-weight: 500;
+    color: #333;
+  }
+
+  /* Tabs Card */
+  .profile-tabs-card {
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  }
+
+  .nav-tabs {
+    border-bottom: none;
+    padding: 0 20px;
+    background-color: #f8f9fa;
+  }
+
+  .nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    padding: 15px 20px;
+    font-weight: 500;
+    border-radius: 0;
+  }
+
+  .nav-tabs .nav-link.active {
+    color: #28a745;
+    background-color: white;
+    border-bottom: 3px solid #28a745;
+  }
+
+  .tab-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0;
+  }
+
+  /* Preferences Summary */
+  .preference-card {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    height: 100%;
+  }
+
+  .preference-icon {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(40, 167, 69, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+  }
+
+  .preference-icon i {
+    font-size: 1.5rem;
+    color: #28a745;
+  }
+
+  .preference-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+  }
+
+  .preference-value {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0;
+  }
+
+  /* Empty States */
+  .favorites-empty,
+  .activity-empty {
+    color: #6c757d;
+  }
+
+  /* Modals */
+  .avatar-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 992px) {
+    .profile-card,
+    .account-info-card,
+    .profile-tabs-card {
+      margin-bottom: 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .profile-card,
+    .account-info-card,
+    .profile-tabs-card {
+      padding: 20px;
+    }
+
+    .nav-tabs .nav-link {
+      padding: 10px 15px;
+      font-size: 0.875rem;
+    }
+  }
+</style>
+{% endblock %}

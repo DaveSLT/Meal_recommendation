@@ -1,64 +1,259 @@
 {% extends "base.html" %} {% block title %}Meal Recommendations{% endblock %} {%
 block content %}
-<div class="row">
-  <div class="col-md-12 mb-4">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="mb-0">Your Personalized Meal Recommendations</h3>
+<div class="homepage-background">
+  <div class="container py-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="mb-0">Your Personalized Meal Recommendations</h3>
+          </div>
+          <div class="card-body">
+            <p>
+              Based on your preferences, here are some meals we think you'll
+              enjoy!
+            </p>
+            <a href="/preferences" class="btn btn-outline-primary"
+              >Update Preferences</a
+            >
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <p>
-          Based on your preferences, here are some meals we think you'll enjoy!
-        </p>
-        <a href="/preferences" class="btn btn-outline-primary"
-          >Update Preferences</a
-        >
+    </div>
+
+    <!-- Recommendations Section -->
+    {% if meals %}
+    <div class="row">
+      {% for meal in meals %}
+      <div class="col-12 col-md-4 mb-4 meal-card-col">
+        <div class="card meal-card rounded-lg h-100">
+          <div class="meal-image-container position-relative">
+            <div
+              class="favorite-btn"
+              onclick="toggleFavorite({{ meal.id }}, this)"
+            >
+              <i class="bi bi-heart favorite-icon"></i>
+            </div>
+            <img
+              src="{{ meal.image }}"
+              class="card-img-top meal-image"
+              alt="{{ meal.name }}"
+            />
+            <div class="image-overlay"></div>
+            <span
+              class="badge category-chip"
+              style="background-color: {{ get_category_color(meal.diet_type) }}"
+            >
+              {{ meal.diet_type|capitalize }}
+            </span>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ meal.name }}</h5>
+            <p class="card-text meal-description">{{ meal.description }}</p>
+            <p><strong>Cuisine:</strong> {{ meal.cuisine }}</p>
+
+            <!-- Rating Stars -->
+            <div class="rating" data-meal-id="{{ meal.id }}">
+              {% for i in range(5) %}
+              <i
+                class="bi bi-star rating-star empty"
+                onclick="rateMeal({{ meal.id }}, {{ i+1 }})"
+              ></i>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="card-footer bg-white border-0 pb-4">
+            <a
+              href="{{ url_for('views.meal_detail', meal_id=meal.id) }}"
+              class="btn view-recipe-btn w-100"
+            >
+              <i class="bi bi-egg-fried me-2"></i>
+              View Recipe
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-warning">
+          <p>
+            No meal recommendations found based on your preferences. Try
+            adjusting your preferences to see more options.
+          </p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Recipe Modal -->
+    <div
+      class="modal fade"
+      id="recipeModal"
+      tabindex="-1"
+      aria-labelledby="recipeModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="recipeModalTitle"></h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="recipeModalCategory" class="mb-2 fw-bold"></div>
+            <img
+              id="recipeModalImage"
+              class="img-fluid rounded mb-3 w-100"
+              style="height: 250px; object-fit: cover"
+            />
+            <p id="recipeModalDescription"></p>
+
+            <div id="recipeModalIngredients">
+              <h3 class="h5 fw-bold">Ingredients</h3>
+              <ul id="ingredientsList"></ul>
+            </div>
+
+            <div id="recipeModalInstructions">
+              <h3 class="h5 fw-bold">Instructions</h3>
+              <p id="instructionsText"></p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-{% if meals %}
-<div class="row">
-  {% for meal in meals %}
-  <div class="col-md-4 mb-4">
-    <div class="card h-100">
-      <img
-        src="{{ meal.image }}"
-        class="card-img-top"
-        alt="{{ meal.name }}"
-        style="height: 200px; object-fit: cover"
-      />
-      <div class="card-body">
-        <h5 class="card-title">{{ meal.name }}</h5>
-        <p class="card-text">{{ meal.description }}</p>
-        <p><strong>Cuisine:</strong> {{ meal.cuisine }}</p>
-        <p><strong>Diet Type:</strong> {{ meal.diet_type|capitalize }}</p>
-        <div class="mb-3">
-          <strong>Ingredients:</strong>
-          <ul class="list-unstyled">
-            {% for ingredient in meal.ingredients %}
-            <li>{{ ingredient|capitalize }}</li>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-      <div class="card-footer">
-        <a href="#" class="btn btn-primary btn-sm">View Recipe</a>
-      </div>
-    </div>
-  </div>
-  {% endfor %}
-</div>
-{% else %}
-<div class="row">
-  <div class="col-md-12">
-    <div class="alert alert-warning">
-      <p>
-        No meal recommendations found based on your preferences. Try adjusting
-        your preferences to see more options.
-      </p>
-    </div>
-  </div>
-</div>
-{% endif %} {% endblock %}
+<script>
+  // Sample meal data with ingredients and instructions
+  const mealsData = [
+    {% for meal in meals %}
+    {
+      id: {{ meal.id }},
+      name: "{{ meal.name }}",
+      category: "{{ meal.diet_type|capitalize }}",
+      description: "{{ meal.description }}",
+      ingredients: [{% for ingredient in meal.ingredients %}"{{ ingredient|capitalize }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+      instructions: "Cook according to your preference and enjoy this delicious meal!",
+      image: "{{ meal.image }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  function viewMeal(mealId) {
+    const meal = mealsData.find(m => m.id === mealId);
+    if (!meal) return;
+
+    // Populate modal with meal data
+    document.getElementById('recipeModalTitle').textContent = meal.name;
+    document.getElementById('recipeModalCategory').textContent = 'Category: ' + meal.category;
+    document.getElementById('recipeModalImage').src = meal.image;
+    document.getElementById('recipeModalDescription').textContent = meal.description;
+
+    // Populate ingredients list
+    const ingredientsList = document.getElementById('ingredientsList');
+    ingredientsList.innerHTML = '';
+    meal.ingredients.forEach(ingredient => {
+      const li = document.createElement('li');
+      li.textContent = ingredient;
+      ingredientsList.appendChild(li);
+    });
+
+    // Set instructions
+    document.getElementById('instructionsText').textContent = meal.instructions;
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('recipeModal'));
+    modal.show();
+  }
+</script>
+
+<style>
+  .homepage-background {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    min-height: 100vh;
+  }
+
+  .meal-card {
+    height: 100%;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .meal-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .meal-card-col {
+    display: flex;
+  }
+
+  .meal-image {
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .meal-image-container {
+    position: relative;
+  }
+
+  .image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      rgba(0, 0, 0, 0.5) 100%
+    );
+  }
+
+  .category-chip {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .meal-description {
+    color: #616161;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    min-height: 60px;
+  }
+
+  .view-recipe-btn {
+    background-color: #ea910b !important;
+    color: white !important;
+    font-weight: 500;
+  }
+
+  .view-recipe-btn:hover {
+    background-color: #d48209 !important;
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,271 @@
+{% extends "base.html" %} {% block title %}Browse Meals - Meal Prefs{% endblock
+%} {% block content %}
+<div class="browse-bg">
+  <div class="container py-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="mb-0">
+              <i class="bi bi-search me-2"></i>
+              Browse All Meals
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-8">
+                <p>
+                  Explore our collection of delicious meals. Use the filters to
+                  find exactly what you're looking for.
+                </p>
+              </div>
+              <div class="col-md-4">
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search meals..."
+                    id="searchInput"
+                  />
+                  <button
+                    class="btn btn-success"
+                    type="button"
+                    id="searchButton"
+                  >
+                    <i class="bi bi-search"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters mt-4">
+              <div class="row">
+                <div class="col-md-3 mb-3">
+                  <select class="form-select" id="cuisineFilter">
+                    <option value="">All Cuisines</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Mexican">Mexican</option>
+                    <option value="Asian">Asian</option>
+                    <option value="American">American</option>
+                    <option value="International">International</option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <select class="form-select" id="dietFilter">
+                    <option value="">All Diet Types</option>
+                    <option value="vegetarian">Vegetarian</option>
+                    <option value="vegan">Vegan</option>
+                    <option value="omnivore">Omnivore</option>
+                    <option value="pasta">Pasta</option>
+                    <option value="salad">Salad</option>
+                    <option value="seafood">Seafood</option>
+                    <option value="dinner">Dinner</option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <select class="form-select" id="timeFilter">
+                    <option value="">Any Prep Time</option>
+                    <option value="15">Quick (< 15 min)</option>
+                    <option value="30">Medium (< 30 min)</option>
+                    <option value="60">Long (< 60 min)</option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <button
+                    class="btn btn-outline-secondary w-100"
+                    id="resetFilters"
+                  >
+                    <i class="bi bi-x-circle me-2"></i>Reset Filters
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meals Grid -->
+    <div class="row" id="mealsGrid">
+      {% for meal in meals %}
+      <div
+        class="col-12 col-md-4 mb-4 meal-card-col meal-item"
+        data-cuisine="{{ meal.cuisine }}"
+        data-diet="{{ meal.diet_type }}"
+        data-time="{{ meal.prep_time }}"
+      >
+        <div class="card meal-card rounded-lg h-100">
+          <div class="meal-image-container position-relative">
+            <div
+              class="favorite-btn"
+              onclick="toggleFavorite({{ meal.id }}, this)"
+            >
+              <i class="bi bi-heart favorite-icon"></i>
+            </div>
+            <img
+              src="{{ meal.image }}"
+              class="card-img-top meal-image"
+              alt="{{ meal.name }}"
+            />
+            <div class="image-overlay"></div>
+            <span
+              class="badge category-chip"
+              style="background-color: {{ get_category_color(meal.diet_type) }}"
+            >
+              {{ meal.diet_type|capitalize }}
+            </span>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ meal.name }}</h5>
+            <p class="card-text meal-description">{{ meal.description }}</p>
+
+            <div class="meal-meta">
+              <span class="meal-meta-item"
+                ><i class="bi bi-globe me-1"></i> {{ meal.cuisine }}</span
+              >
+              <span class="meal-meta-item"
+                ><i class="bi bi-clock me-1"></i> {{ meal.prep_time +
+                meal.cook_time }} min</span
+              >
+            </div>
+
+            <!-- Rating Stars -->
+            <div class="rating mt-2" data-meal-id="{{ meal.id }}">
+              {% for i in range(5) %}
+              <i
+                class="bi bi-star rating-star empty"
+                onclick="rateMeal({{ meal.id }}, {{ i+1 }})"
+              ></i>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="card-footer bg-white border-0 pb-4">
+            <a
+              href="{{ url_for('views.meal_detail', meal_id=meal.id) }}"
+              class="btn view-recipe-btn w-100"
+            >
+              <i class="bi bi-egg-fried me-2"></i>
+              View Recipe
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- No Results Message -->
+    <div class="row d-none" id="noResults">
+      <div class="col-md-12">
+        <div class="alert alert-warning">
+          <p>
+            No meals match your search criteria. Try adjusting your filters or
+            search terms.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .browse-bg {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    min-height: 100vh;
+  }
+
+  .meal-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+
+  .meal-meta-item {
+    display: flex;
+    align-items: center;
+  }
+</style>
+
+{% block additional_scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
+    const cuisineFilter = document.getElementById("cuisineFilter");
+    const dietFilter = document.getElementById("dietFilter");
+    const timeFilter = document.getElementById("timeFilter");
+    const resetFilters = document.getElementById("resetFilters");
+    const mealsGrid = document.getElementById("mealsGrid");
+    const noResults = document.getElementById("noResults");
+    const mealItems = document.querySelectorAll(".meal-item");
+
+    // Search and filter function
+    function filterMeals() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const cuisine = cuisineFilter.value;
+      const diet = dietFilter.value;
+      const time = timeFilter.value;
+
+      let visibleCount = 0;
+
+      mealItems.forEach((item) => {
+        const mealName = item
+          .querySelector(".card-title")
+          .textContent.toLowerCase();
+        const mealDescription = item
+          .querySelector(".meal-description")
+          .textContent.toLowerCase();
+        const mealCuisine = item.dataset.cuisine;
+        const mealDiet = item.dataset.diet;
+        const mealTime = parseInt(item.dataset.time);
+
+        const matchesSearch =
+          searchTerm === "" ||
+          mealName.includes(searchTerm) ||
+          mealDescription.includes(searchTerm);
+
+        const matchesCuisine = cuisine === "" || mealCuisine === cuisine;
+        const matchesDiet = diet === "" || mealDiet === diet;
+        const matchesTime = time === "" || mealTime <= parseInt(time);
+
+        if (matchesSearch && matchesCuisine && matchesDiet && matchesTime) {
+          item.classList.remove("d-none");
+          visibleCount++;
+        } else {
+          item.classList.add("d-none");
+        }
+      });
+
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        noResults.classList.remove("d-none");
+      } else {
+        noResults.classList.add("d-none");
+      }
+    }
+
+    // Event listeners
+    searchButton.addEventListener("click", filterMeals);
+    searchInput.addEventListener("keyup", function (e) {
+      if (e.key === "Enter") {
+        filterMeals();
+      }
+    });
+
+    cuisineFilter.addEventListener("change", filterMeals);
+    dietFilter.addEventListener("change", filterMeals);
+    timeFilter.addEventListener("change", filterMeals);
+
+    resetFilters.addEventListener("click", function () {
+      searchInput.value = "";
+      cuisineFilter.value = "";
+      dietFilter.value = "";
+      timeFilter.value = "";
+      filterMeals();
+    });
+  });
+</script>
+{% endblock %} {% endblock %}

@@ -1,0 +1,333 @@
+{% extends "base.html" %} {% block title %}{{ meal.name }} - Meal Prefs{%
+endblock %} {% block content %}
+<div class="meal-detail-bg">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="{{ url_for('views.home') }}">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="{{ url_for('views.recommendations') }}"
+                >Recommendations</a
+              >
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              {{ meal.name }}
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 col-lg-8">
+        <div class="card meal-detail-card">
+          <div class="meal-detail-image-container">
+            <img
+              src="{{ meal.image }}"
+              class="meal-detail-image"
+              alt="{{ meal.name }}"
+            />
+            <div class="image-overlay"></div>
+            <div
+              class="favorite-btn large"
+              onclick="toggleFavorite({{ meal.id }}, this)"
+            >
+              <i class="bi bi-heart favorite-icon"></i>
+            </div>
+            <span
+              class="badge category-chip"
+              style="background-color: {{ get_category_color(meal.diet_type) }}"
+            >
+              {{ meal.diet_type|capitalize }}
+            </span>
+          </div>
+
+          <div class="card-body p-4">
+            <h1 class="meal-title">{{ meal.name }}</h1>
+
+            <div class="meal-meta mb-4">
+              <span class="meal-meta-item"
+                ><i class="bi bi-globe me-2"></i>{{ meal.cuisine }}</span
+              >
+              <span class="meal-meta-item"
+                ><i class="bi bi-clock me-2"></i>{{ meal.prep_time +
+                meal.cook_time }} min</span
+              >
+              <span class="meal-meta-item"
+                ><i class="bi bi-people me-2"></i>{{ meal.servings }}
+                servings</span
+              >
+            </div>
+
+            <div class="rating mb-4" data-meal-id="{{ meal.id }}">
+              <span class="me-2">Rate this recipe:</span>
+              {% for i in range(5) %}
+              <i
+                class="bi bi-star rating-star empty"
+                onclick="rateMeal({{ meal.id }}, {{ i+1 }})"
+              ></i>
+              {% endfor %}
+            </div>
+
+            <p class="meal-description">{{ meal.description }}</p>
+
+            <div class="nutrition-info mb-4">
+              <h3 class="section-heading">Nutrition Information</h3>
+              <div class="nutrition-grid">
+                <div class="nutrition-item">
+                  <span class="nutrition-value">{{ meal.calories }}</span>
+                  <span class="nutrition-label">Calories</span>
+                </div>
+                <div class="nutrition-item">
+                  <span class="nutrition-value">{{ meal.protein }}g</span>
+                  <span class="nutrition-label">Protein</span>
+                </div>
+                <div class="nutrition-item">
+                  <span class="nutrition-value">{{ meal.carbs }}g</span>
+                  <span class="nutrition-label">Carbs</span>
+                </div>
+                <div class="nutrition-item">
+                  <span class="nutrition-value">{{ meal.fat }}g</span>
+                  <span class="nutrition-label">Fat</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ingredients mb-4">
+              <h3 class="section-heading">Ingredients</h3>
+              <ul class="ingredients-list">
+                {% for ingredient in meal.ingredients %}
+                <li class="ingredient-item">
+                  <i class="bi bi-check-circle-fill me-2 text-success"></i>
+                  {{ ingredient|capitalize }}
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <div class="instructions">
+              <h3 class="section-heading">Instructions</h3>
+              <div class="instructions-text">{{ meal.instructions }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card similar-meals-card">
+          <div class="card-header">
+            <h3 class="mb-0">Similar Meals</h3>
+          </div>
+          <div class="card-body">
+            <div class="similar-meals-list">
+              {% for i in range(3) %} {% set similar_meal = meals[i] if i <
+              meals|length else meals[0] %}
+              <div class="similar-meal-item">
+                <img
+                  src="{{ similar_meal.image }}"
+                  class="similar-meal-image"
+                  alt="{{ similar_meal.name }}"
+                />
+                <div class="similar-meal-info">
+                  <h5 class="similar-meal-title">{{ similar_meal.name }}</h5>
+                  <p class="similar-meal-cuisine">{{ similar_meal.cuisine }}</p>
+                  <a
+                    href="{{ url_for('views.meal_detail', meal_id=similar_meal.id) }}"
+                    class="btn btn-sm btn-outline-success"
+                    >View</a
+                  >
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .meal-detail-bg {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+  }
+
+  .meal-detail-card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border: none;
+  }
+
+  .meal-detail-image-container {
+    position: relative;
+    height: 400px;
+  }
+
+  .meal-detail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .meal-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .meal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .meal-meta-item {
+    display: flex;
+    align-items: center;
+    color: #6c757d;
+    font-weight: 500;
+  }
+
+  .section-heading {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #28a745;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.5rem;
+  }
+
+  .nutrition-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .nutrition-item {
+    text-align: center;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .nutrition-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #28a745;
+  }
+
+  .nutrition-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+
+  .ingredients-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  .ingredient-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .instructions-text {
+    line-height: 1.8;
+    white-space: pre-line;
+  }
+
+  .similar-meals-card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border: none;
+    position: sticky;
+    top: 20px;
+  }
+
+  .similar-meal-item {
+    display: flex;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .similar-meal-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .similar-meal-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 15px;
+  }
+
+  .similar-meal-info {
+    flex: 1;
+  }
+
+  .similar-meal-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .similar-meal-cuisine {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 10px;
+  }
+
+  .favorite-btn.large {
+    width: 50px;
+    height: 50px;
+    top: 20px;
+    left: 20px;
+  }
+
+  .favorite-btn.large .favorite-icon {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 992px) {
+    .meal-detail-image-container {
+      height: 300px;
+    }
+
+    .meal-title {
+      font-size: 2rem;
+    }
+
+    .nutrition-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 576px) {
+    .meal-detail-image-container {
+      height: 200px;
+    }
+
+    .meal-title {
+      font-size: 1.5rem;
+    }
+
+    .meal-meta {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+</style>
+{% endblock %}

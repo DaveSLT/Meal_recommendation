@@ -1,0 +1,15 @@
+base
+browse - used n views.py
+favorite - used n views.py
+gather_data- used n views.py
+home - used n views.py
+index
+landing - used n views.py
+login - used in auth.py
+meal_detail - used n views.py
+meal_recommendation - used n views.py
+preferences
+profile
+recommendations
+register - used in auth.py
+user_profile -used n views.py
