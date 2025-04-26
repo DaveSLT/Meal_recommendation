@@ -1,0 +1,11 @@
+base.html - Base template with navigation and common elements
+browse.html - Browse all meals page
+change_password.html -Password change form
+favorites.html - User's favorite meals page
+landing - Landing page for non-authenticated users
+login - Login form
+meal_detai -Individual meal details page
+meal_recommendation - Personalized meal recommendations page
+preferences - User preference settings form
+register - Registration form
+user_profile - User profile page

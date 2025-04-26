@@ -3,26 +3,6 @@ endblock %} {% block content %}
 <div class="meal-detail-bg">
   <div class="container py-5">
     <div class="row">
-      <div class="col-12">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-              <a href="{{ url_for('views.home') }}">Home</a>
-            </li>
-            <li class="breadcrumb-item">
-              <a href="{{ url_for('views.recommendations') }}"
-                >Recommendations</a
-              >
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">
-              {{ meal.name }}
-            </li>
-          </ol>
-        </nav>
-      </div>
-    </div>
-
-    <div class="row">
       <div class="col-12 col-lg-8">
         <div class="card meal-detail-card">
           <div class="meal-detail-image-container">
@@ -100,10 +80,11 @@ endblock %} {% block content %}
             <div class="ingredients mb-4">
               <h3 class="section-heading">Ingredients</h3>
               <ul class="ingredients-list">
-                {% for ingredient in meal.ingredients %}
+                {% for meal_ingredient in meal.ingredients %}
                 <li class="ingredient-item">
                   <i class="bi bi-check-circle-fill me-2 text-success"></i>
-                  {{ ingredient|capitalize }}
+                  {{ meal_ingredient.ingredient.name|capitalize }} - {{
+                  meal_ingredient.quantity }} {{ meal_ingredient.unit }}
                 </li>
                 {% endfor %}
               </ul>

@@ -67,9 +67,9 @@
                 <div class="col-md-3 mb-3">
                   <select class="form-select" id="timeFilter">
                     <option value="">Any Prep Time</option>
-                    <option value="15">Quick (< 15 min)</option>
+                    <option value="10">Quick (< 10 min)</option>
                     <option value="30">Medium (< 30 min)</option>
-                    <option value="60">Long (< 60 min)</option>
+                    <option value="40">Long (< 60 min)</option>
                   </select>
                 </div>
                 <div class="col-md-3 mb-3">
@@ -126,8 +126,7 @@
                 ><i class="bi bi-globe me-1"></i> {{ meal.cuisine }}</span
               >
               <span class="meal-meta-item"
-                ><i class="bi bi-clock me-1"></i> {{ meal.prep_time +
-                meal.cook_time }} min</span
+                ><i class="bi bi-clock me-1"></i> {{ meal.prep_time }} min</span
               >
             </div>
 

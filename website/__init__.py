@@ -29,7 +29,7 @@ def create_app():
     
     # Create database if it doesn't exist
     with app.app_context():
-        db.drop_all()
+        # db.drop_all()
         db.create_all()
     
     return app

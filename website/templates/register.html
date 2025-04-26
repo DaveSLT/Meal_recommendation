@@ -93,9 +93,9 @@
                           style="width: 0%"
                         ></div>
                       </div>
-                      <small class="text-muted strength-text"
-                        >Password strength: <span>Weak</span></small
-                      >
+                      <small class="text-muted strength-text">
+                        Password strength: <span>Weak</span>
+                      </small>
                     </div>
                   </div>
                 </div>
@@ -360,8 +360,7 @@
     }
   }
 </style>
-
-{% block additional_scripts %}
+{% endblock %} {% block additional_scripts %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     // Toggle password visibility
@@ -370,22 +369,22 @@
     toggleButtons.forEach((button) => {
       button.addEventListener("click", function () {
         const targetId = this.getAttribute("data-target");
-        const passwordInput = document.querySelector("#" + targetId);
+        const input = document.getElementById(targetId);
+        const icon = this.querySelector("i");
 
-        const type =
-          passwordInput.getAttribute("type") === "password"
-            ? "text"
-            : "password";
-        passwordInput.setAttribute("type", type);
-
-        // Toggle eye icon
-        const eyeIcon = this.querySelector("i");
-        eyeIcon.classList.toggle("bi-eye");
-        eyeIcon.classList.toggle("bi-eye-slash");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.remove("bi-eye");
+          icon.classList.add("bi-eye-slash");
+        } else {
+          input.type = "password";
+          icon.classList.remove("bi-eye-slash");
+          icon.classList.add("bi-eye");
+        }
       });
     });
 
-    // Password strength meter
+    // Password strength checker
     const password1Input = document.querySelector("#password1");
     const strengthMeter = document.querySelector("#password-strength");
     const progressBar = strengthMeter.querySelector(".progress-bar");
@@ -393,28 +392,15 @@
 
     password1Input.addEventListener("input", function () {
       const password = this.value;
-
       if (password.length > 0) {
         strengthMeter.classList.remove("d-none");
-
-        // Calculate password strength
         let strength = 0;
-
-        // Length check
         if (password.length >= 8) strength += 25;
-
-        // Uppercase check
         if (/[A-Z]/.test(password)) strength += 25;
-
-        // Lowercase check
         if (/[a-z]/.test(password)) strength += 25;
-
-        // Number/special char check
         if (/[0-9!@#$%^&*]/.test(password)) strength += 25;
 
-        // Update UI
         progressBar.style.width = strength + "%";
-
         if (strength < 25) {
           progressBar.className = "progress-bar bg-danger";
           strengthText.textContent = "Weak";
@@ -434,4 +420,4 @@
     });
   });
 </script>
-{% endblock %} {% endblock %}
+{% endblock %}

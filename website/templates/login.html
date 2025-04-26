@@ -50,12 +50,13 @@ block content %}
                     placeholder="Enter your password"
                     required
                   />
-                  <button
-                    class="btn btn-outline-secondary toggle-password"
-                    type="button"
+                  <span
+                    class="input-group-text"
+                    style="cursor: pointer"
+                    id="toggle-password"
                   >
-                    <i class="bi bi-eye"></i>
-                  </button>
+                    <i class="bi bi-eye-slash" id="toggle-password-icon"></i>
+                  </span>
                 </div>
               </div>
 
@@ -104,6 +105,11 @@ block content %}
 </div>
 
 <style>
+  .input-group-text.password-toggle {
+    border-left: none;
+    background-color: white;
+  }
+
   .login-page {
     min-height: 100vh;
     display: flex;
@@ -204,10 +210,6 @@ block content %}
     margin-bottom: 0;
   }
 
-  .login-body {
-    margin-bottom: 30px;
-  }
-
   .form-label {
     font-weight: 500;
     color: #495057;
@@ -225,11 +227,6 @@ block content %}
   .form-control:focus {
     box-shadow: none;
     border-color: #ced4da;
-  }
-
-  .toggle-password {
-    border-left: none;
-    background-color: white;
   }
 
   .forgot-password {
@@ -288,24 +285,27 @@ block content %}
     }
   }
 </style>
+{% endblock %} {% block additional_scripts %}
+<!-- Bootstrap Icons CDN -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+/>
 
-{% block additional_scripts %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    // Toggle password visibility
-    const togglePassword = document.querySelector(".toggle-password");
-    const passwordInput = document.querySelector("#password");
+    const toggle = document.getElementById("toggle-password");
+    const passwordInput = document.getElementById("password");
+    const icon = document.getElementById("toggle-password-icon");
 
-    togglePassword.addEventListener("click", function () {
-      const type =
-        passwordInput.getAttribute("type") === "password" ? "text" : "password";
-      passwordInput.setAttribute("type", type);
-
-      // Toggle eye icon
-      const eyeIcon = this.querySelector("i");
-      eyeIcon.classList.toggle("bi-eye");
-      eyeIcon.classList.toggle("bi-eye-slash");
-    });
+    if (toggle && passwordInput && icon) {
+      toggle.addEventListener("click", function () {
+        const isHidden = passwordInput.type === "password";
+        passwordInput.type = isHidden ? "text" : "password";
+        icon.classList.toggle("bi-eye");
+        icon.classList.toggle("bi-eye-slash");
+      });
+    }
   });
 </script>
-{% endblock %} {% endblock %}
+{% endblock %}

@@ -60,7 +60,28 @@ def signup():
             db.session.commit()
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.preferences'))
     
     return render_template("register.html", user=current_user)
 
+@auth.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if not current_user.check_password(current_password):
+            flash('Current password is incorrect.', category='error')
+        elif new_password != confirm_password:
+            flash('New passwords don\'t match.', category='error')
+        elif len(new_password) < 7:
+            flash('Password must be at least 7 characters.', category='error')
+        else:
+            current_user.set_password(new_password)
+            db.session.commit()
+            flash('Password changed successfully!', category='success')
+            return redirect(url_for('views.profile'))
+    
+    return render_template("change_password.html", user=current_user)
